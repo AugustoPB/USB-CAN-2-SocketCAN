@@ -1,0 +1,7 @@
+### Build Folder ###
+build/
+*/build/
+
+### VisualStudioCode ###
+.vscode/*
+*.code-workspace
