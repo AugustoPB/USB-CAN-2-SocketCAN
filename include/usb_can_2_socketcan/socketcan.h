@@ -36,8 +36,8 @@ class SocketCan {
   ~SocketCan();
   SocketCanError Open(const std::string& socket_interface, unsigned int read_timeout);
   SocketCanError Close();
-  SocketCanError Write(const SocketCanFrame& frame);
-  SocketCanError Read(SocketCanFrame& frame);
+  SocketCanError Write(const SocketCanFrame &frame, unsigned size);
+  int Read(SocketCanFrame &frame, unsigned size);
 };
 
 }  // namespace socketcan

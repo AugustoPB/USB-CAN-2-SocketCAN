@@ -47,21 +47,20 @@ SocketCanError SocketCan::Close() {
   return SocketCanError::OK;
 }
 
-SocketCanError SocketCan::Write(const SocketCanFrame& frame) {
-  if (::write(socket_, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
+SocketCanError SocketCan::Write(const SocketCanFrame &frame, unsigned size) {
+  if (::write(socket_, &frame, sizeof(can_frame)*size) != sizeof(can_frame)*size) {
     ::perror((std::string(__FILE__) + " Write").c_str());
     return SocketCanError::WRITE_ERROR;
   }
   return SocketCanError::OK;
 }
 
-SocketCanError SocketCan::Read(SocketCanFrame& frame) {
-  auto num_bytes = ::read(socket_, &frame, CANFD_MTU);
-  if (num_bytes < 0) {
+int SocketCan::Read(SocketCanFrame &frame, unsigned size) {
+  auto recv_cnt = ::read(socket_, &frame, sizeof(SocketCanFrame)*size);
+  if (recv_cnt < 0) {
     ::perror((std::string(__FILE__) + " Read").c_str());
-    return SocketCanError::READ_ERROR;
   }
-  return SocketCanError::OK;
+  return recv_cnt;
 }
 
 }  // namespace socketcan

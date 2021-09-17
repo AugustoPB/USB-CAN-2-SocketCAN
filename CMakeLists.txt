@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.0.2)
 project(usbcan2socketcan)
 
 set(CMAKE_CXX_STANDARD 17)
+add_compile_options(-Wall -Wextra)
+add_compile_options(-DCMAKE_BUILD_TYPE=Debug)
 
 add_library(libusbcan SHARED IMPORTED)
 set_property(TARGET libusbcan PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_LIST_DIR}/lib/libusbcan.so)

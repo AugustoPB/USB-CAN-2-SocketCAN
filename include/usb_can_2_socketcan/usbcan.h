@@ -57,8 +57,8 @@ public:
                    unsigned int read_timeout);
   UsbCanError Close();
   UsbCanError Init();
-  UsbCanError Write(UsbCanFrame *frame, unsigned int channel, unsigned size);
-  UsbCanError Read(UsbCanFrame *frame, unsigned int channel, unsigned size);
+  UsbCanError Write(UsbCanFrame &frame, unsigned int channel, unsigned size);
+  int Read(UsbCanFrame &frame, unsigned int channel, unsigned size);
 };
 
 }  // namespace usbcan
