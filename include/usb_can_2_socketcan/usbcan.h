@@ -8,6 +8,7 @@ using UsbCanFrame = VCI_CAN_OBJ;
 
 enum { CAN_EFF_FLAG_MASK = 0x80000000 };
 enum { CAN_RTR_FLAG_MASK = 0x40000000 };
+enum { MAX_CHANNELS = 2 };
 
 enum UsbCanError {
   OK,
@@ -45,7 +46,7 @@ enum UsbCanBaund {
 class UsbCan {
   unsigned int device_idx_;
   UsbCanChannelMask channel_mask_;
-  UsbCanBaund baund_rate_;
+  UsbCanBaund *baund_rate_;
   unsigned int read_timeout_;
 
 public:
@@ -53,7 +54,7 @@ public:
   UsbCan(const UsbCan &) = delete;
   UsbCan &operator=(const UsbCan &) = delete;
   ~UsbCan();
-  UsbCanError Open(unsigned int device_idx, UsbCanChannelMask channel_mask, UsbCanBaund baund_rate,
+  UsbCanError Open(unsigned int device_idx, UsbCanChannelMask channel_mask, UsbCanBaund baund_rate[MAX_CHANNELS],
                    unsigned int read_timeout);
   UsbCanError Close();
   UsbCanError Init();

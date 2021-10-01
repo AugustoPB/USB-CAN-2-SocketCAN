@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.8)
+
+option(ROS "Exclude anything depending on ROS" ON)
+
+set(USB_CAN_CHANNEL_MASK "0x01" CACHE STRING "Mask for channel selection.")
+
+set(USB_CAN_CHANNEL_1_BAUND_RATE "0x1C00" CACHE STRING "Baund rate for channel 1.")
+
+set(USB_CAN_CHANNEL_2_BAUND_RATE "0x1C00" CACHE STRING "Baund rate for channel 2.")
+
+set(SOCKETCAN_INTERFACE "vcan0" CACHE STRING "Socketcan interface.")
+
+set(RESPONSE_TIMEOUT "100" CACHE STRING "Timeout value (ms) to wait response.")

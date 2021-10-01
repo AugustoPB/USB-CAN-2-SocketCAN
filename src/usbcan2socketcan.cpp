@@ -46,13 +46,14 @@ void RxThead(bool &stop, SocketCan &socket_can, UsbCan &usb_can) {
   }
 }
 
-int main(int argc, char *argv[]) {
+int main(int , char *[]) {
   UsbCan usb_can;
-  if (usb_can.Open(0, CAN1, CAN500K, 100) != UsbCanError::OK) return 0;
+  UsbCanBaund baund_rate[MAX_CHANNELS] = {(UsbCanBaund)USB_CAN_CHANNEL_1_BAUND_RATE, (UsbCanBaund)USB_CAN_CHANNEL_2_BAUND_RATE};
+  if (usb_can.Open(0, (UsbCanChannelMask)USB_CAN_CHANNEL_MASK, baund_rate, RESPONSE_TIMEOUT) != UsbCanError::OK) return 0;
   if (usb_can.Init() != UsbCanError::OK) return 0;
 
   SocketCan socket_can;
-  if (socket_can.Open("vcan0", 100) != SocketCanError::OK) return 0;
+  if (socket_can.Open(SOCKETCAN_INTERFACE, RESPONSE_TIMEOUT) != SocketCanError::OK) return 0;
 
   bool stop_all;
 

@@ -5,14 +5,13 @@
 namespace usbcan {
 
 enum { USBCAN_TYPE = 4 };
-enum { MAX_CHANNELS = 2 };
 
 UsbCan::UsbCan() {}
 
 UsbCan::~UsbCan() { Close(); }
 
 UsbCanError UsbCan::Open(unsigned int device_idx, UsbCanChannelMask channel_mask,
-                         UsbCanBaund baund_rate, unsigned int read_timeout) {
+                         UsbCanBaund baund_rate[MAX_CHANNELS], unsigned int read_timeout) {
   device_idx_ = device_idx;
   channel_mask_ = channel_mask;
   baund_rate_ = baund_rate;
@@ -34,18 +33,20 @@ UsbCanError UsbCan::Close() {
 }
 
 UsbCanError UsbCan::Init() {
-  VCI_INIT_CONFIG config;
-  config.AccCode = 0x00000000;
-  config.AccMask = 0xffffffff;
-  config.Filter = 1;
-  config.Mode = 0;
-  config.Timing0 = baund_rate_ & 0xff;
-  config.Timing1 = baund_rate_ >> 8;
+  VCI_INIT_CONFIG configs[MAX_CHANNELS];
+  for (size_t i = 0; i < MAX_CHANNELS; i++) {
+    configs[i].AccCode = 0x00000000;
+    configs[i].AccMask = 0xffffffff;
+    configs[i].Filter = 1;
+    configs[i].Mode = 0;
+    configs[i].Timing0 = baund_rate_[i] & 0xff;
+    configs[i].Timing1 = baund_rate_[i] >> 8;
+  }
 
   for (int i = 0; i < MAX_CHANNELS; i++) {
     if ((channel_mask_ & (1 << i)) == 0) continue;
 
-    if (!::VCI_InitCAN(USBCAN_TYPE, device_idx_, i, &config)) {
+    if (!::VCI_InitCAN(USBCAN_TYPE, device_idx_, i, &configs[i])) {
       std::cerr << __FILE__ << " " << __LINE__ << " Init error" << std::endl;
       return UsbCanError::INIT_ERROR;
     }
@@ -62,10 +63,10 @@ UsbCanError UsbCan::Write(UsbCanFrame &frame, unsigned int channel, unsigned siz
   if (size != ::VCI_Transmit(USBCAN_TYPE, device_idx_, channel, &frame, size)) {
     VCI_ERR_INFO errinfo;
     VCI_ReadErrInfo(USBCAN_TYPE, device_idx_, channel, &errinfo);
-    std::cerr << __FILE__ << " " << __LINE__ << " VCI_Write error, ErrCode(" << errinfo.ErrCode << ") Passive_ErrData("
-              << errinfo.Passive_ErrData[0] << " " << errinfo.Passive_ErrData[1] << " "
-              << errinfo.Passive_ErrData[2] << ") ArLost_ErrData(" << errinfo.ArLost_ErrData << ")"
-              << std::endl;
+    std::cerr << __FILE__ << " " << __LINE__ << " VCI_Write error, ErrCode(" << errinfo.ErrCode
+              << ") Passive_ErrData(" << errinfo.Passive_ErrData[0] << " "
+              << errinfo.Passive_ErrData[1] << " " << errinfo.Passive_ErrData[2]
+              << ") ArLost_ErrData(" << errinfo.ArLost_ErrData << ")" << std::endl;
     return UsbCanError::WRITE_ERROR;
   }
 
